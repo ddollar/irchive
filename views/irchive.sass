@@ -1,0 +1,54 @@
+body
+  :font-family Helvetica, Arial, sans-serif
+  :font-size 1.2em
+  :margin 0
+
+a
+  :color #a2d3f8
+
+ul
+  :margin 0
+  :padding 0
+
+ul#channels
+  :position absolute
+  :top 0
+  :bottom 0
+  :left 0
+  :width 200px
+  :border-right 2px #666 solid
+  :background #ccc
+  li
+    :list-style-type none
+    :margin 0
+    :padding 12px 12px
+    :border-bottom 2px #999 solid
+    :background #eee
+    :font-weight bold
+    :cursor pointer
+    &.selected
+      :background #999
+      :color #333
+      
+ul#activity
+  :position absolute
+  :background #333
+  :top 0
+  :left 202px
+  :right 0
+  :bottom 0
+  :overflow auto
+  li
+    :font-family Monaco, Courier New, monospace
+    :color #ccc
+    :list-style-type none
+    :padding 4px 10px
+    &:nth-child(even)
+      :background #444
+    .channel
+      :color #888
+    .date
+      :color #aaa
+    .sender
+      :color #fff
+      :font-weight bold

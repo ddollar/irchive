@@ -1,0 +1,9 @@
+- message = params[:message]
+- date    = DateTime.parse(message[:date]).strftime('%H:%M')
+
+%li{ :type => :privmsg, :date => message[:date] }
+
+  / %span.channel= "(#{message[:channel]})"
+  %span.date=    "[#{date}]"
+  %span.sender=  "&lt;#{message[:sender]['nick']}&gt;"
+  %span.message= format_message(message[:message])

@@ -1,0 +1,4 @@
+nick: loguser
+password: my-nickserv-password
+channels:
+  - "irchive"

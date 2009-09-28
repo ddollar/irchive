@@ -1,0 +1,7 @@
+--- 
+event: 
+  901: :rpl_identified
+  477: :err_needreggednick
+  250: :rpl_statsconn
+usermode:
+  e: :identified

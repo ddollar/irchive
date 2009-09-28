@@ -1,0 +1,8 @@
+Needs the following gems:
+  * anise
+  * builder
+  * couchrest
+  * facets
+  * memcache-client
+  * rack-cache
+  * sinatra
