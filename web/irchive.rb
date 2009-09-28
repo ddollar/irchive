@@ -19,14 +19,14 @@ get %r{/channels/(.*?)/activity.json} do
   headers['Cache-Control'] = 'public, max-age=5'
   content_type 'application/javascript', :charset => 'utf-8'
   channel = params[:captures].first
-  activity_by(:channel, channel, 200).to_json
+  activity_by(:channel, channel, 30).to_json
 end
 
 get %r{/search/(.*?)/activity.json} do
   headers['Cache-Control'] = 'public, max-age=5'
   content_type 'application/javascript', :charset => 'utf-8'
   term  = params[:captures].first
-  activity_by(:term, term, 200).to_json
+  activity_by(:term, term, 30).to_json
 end
 
 ## latest ####################################################################
