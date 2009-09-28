@@ -1,8 +1,26 @@
-Needs the following gems:
-  * anise
-  * builder
-  * couchrest
-  * facets
-  * memcache-client
-  * rack-cache
-  * sinatra
+= IRChive
+
+== Installation
+
+=== Clone the repository
+
+ $ git clone git://github.com/ddollar/irchive.git
+
+=== Install the gem dependencies
+
+ $ rake gems:install
+
+== Configuration
+
+ $ cp config/irchive.yml.example config/irchive.yml
+ $ $EDITOR config/irchive.yml
+
+== Running
+
+=== IRC daemon
+
+ $ ruby bin/irchive.rb
+
+=== Web frontend
+
+Point your Passenger server at +irchive+'s root directory
