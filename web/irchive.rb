@@ -19,28 +19,14 @@ get %r{/channels/(.*?)/activity.json} do
   headers['Cache-Control'] = 'public, max-age=5'
   content_type 'application/javascript', :charset => 'utf-8'
   channel = params[:captures].first
-  activity_by(:channel, channel, 30).to_json
+  activity_by(:channel, channel, 30, params[:since]).to_json
 end
 
 get %r{/search/(.*?)/activity.json} do
   headers['Cache-Control'] = 'public, max-age=5'
   content_type 'application/javascript', :charset => 'utf-8'
   term  = params[:captures].first
-  activity_by(:term, term, 30).to_json
-end
-
-## latest ####################################################################
-
-get %r{/channels/(.*?)/latest.json} do
-  content_type 'application/javascript', :charset => 'utf-8'
-  channel = params[:captures].first
-  activity_by(:channel, channel, 1).to_json
-end
-
-get %r{/search/(.*?)/latest.json} do
-  content_type 'application/javascript', :charset => 'utf-8'
-  term  = params[:captures].first
-  activity_by(:term, term, 1).to_json
+  activity_by(:term, term, 30, params[:since]).to_json
 end
 
 ## message ###################################################################
@@ -64,9 +50,9 @@ def database
   @database ||= CouchRest.database('http://127.0.0.1:5984/irchive')
 end
 
-def activity_by(type, value, limit)
+def activity_by(type, value, limit, since=nil)
   startkey  = [value, {}]
-  endkey    = [value]
+  endkey    = since ? [value, since] : [value]
 
   result = database.view("activity/by_#{type}",
     :startkey   => startkey,
@@ -74,6 +60,8 @@ def activity_by(type, value, limit)
     :descending => 'true',
     :limit      => limit
   )
+
+  result['rows'].pop if since
 
   result['rows'].map do |row|
     row['value']

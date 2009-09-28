@@ -1,4 +1,6 @@
 var _current_channel = null;
+var _latest_activity = null;
+var _messages_shown  = [];
 
 $(window).ready(function() {
 
@@ -11,6 +13,7 @@ $(window).ready(function() {
 
     $('li.channel:first').trigger('click');
   });
+
 });
 
 function clear_channels() {
@@ -37,26 +40,47 @@ function switch_to_channel() {
 
   clear_activity();
 
-  $.getJSON('/channels/' + escape(channel) + '/activity.json', function(data) {
+  $.getJSON(activity_url(channel), function(data) {
     $.each(data, function(i, message) {
-      prepend_activity(channel, message.id);
+      add_activity(channel, message, true);
     });
     $.ajaxQueueStart();
   });
+
+  begin_periodic_updater(channel, activity_url);
+}
+
+function activity_url(channel) {
+  return('/channels/' + escape(channel) + '/activity.json');
 }
 
 function clear_activity() {
   $('#activity').children().remove();
+  _messages_shown = [];
 }
 
-function prepend_activity(channel, id) {
+function add_activity(channel, message, prepend) {
   $.ajaxQueue({
     type: 'GET',
-    url:  '/messages/' + escape(id) + '.html',
+    url:  '/messages/' + escape(message.id) + '.html',
     channel: channel,
     success: function(data) {
-      if (this.channel == _current_channel) {
-        $('#activity').prepend(data);
+      if (this.channel == _current_channel && _messages_shown.indexOf(message.id) == -1) {
+
+        if (prepend) {
+          $('#activity').prepend(data);
+        } else {
+          $('#activity').append(data);
+        }
+
+        $("#activity").attr({ scrollTop: $("#activity").attr("scrollHeight") });
+
+        if (_latest_activity == null || Date.parse(message.date) >= Date.parse(_latest_activity)) {
+          _latest_activity = message.date;
+        }
+
+        _messages_shown.push(message.id);
+        begin_periodic_updater(channel, activity_url(channel));
       }
     }
   });
@@ -64,4 +88,30 @@ function prepend_activity(channel, id) {
 
 function sort_messages_by_date() {
   $("ul#activity>li").tsort({attr:"date"});
+}
+
+function clear_periodic_updater() {
+  clearTimeout(PeriodicalTimer);
+}
+
+function begin_periodic_updater(channel, activity_url) {
+  clear_periodic_updater();
+
+  $.PeriodicalUpdater({
+    url :       activity_url,
+    sendData:   { since: _latest_activity },
+    minTimeout: 1000,
+    maxTimeout: 4000
+  },
+  function(data) {
+    try {
+      $.each(JSON.parse(data), function(i, message) {
+        add_activity(channel, message, false);
+      });
+
+      $.ajaxQueueStart();
+    } catch(error) {
+      //console.log("ERROR: " + error)
+    }
+  });
 }
