@@ -39,7 +39,7 @@
 
         function getdata()
         {
-            f(settings.url, settings.sendData, function(d){
+            f(settings.url, settings.sendData(), function(d){
                 if(prevContent != d)
                 {
                     // content has changed

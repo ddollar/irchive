@@ -80,7 +80,6 @@ function add_activity(channel, message, prepend) {
         }
 
         _messages_shown.push(message.id);
-        begin_periodic_updater(channel, activity_url(channel));
       }
     }
   });
@@ -99,7 +98,7 @@ function begin_periodic_updater(channel, activity_url) {
 
   $.PeriodicalUpdater({
     url :       activity_url,
-    sendData:   { since: _latest_activity },
+    sendData:   function() { return({ since: _latest_activity }); },
     minTimeout: 1000,
     maxTimeout: 4000
   },
