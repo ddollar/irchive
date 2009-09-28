@@ -14,8 +14,18 @@ role :app, "peervoice.com"
 role :db,  "peervoice.com"
 role :irc, "peervoice.com"
 
+# no idea why cap doesn't do this
 after 'deploy:setup' do
   sudo %{ chown -R #{user} #{deploy_to} }
+end
+
+# symlink config files out of shared/config
+after 'deploy:update_code' do
+  run %{
+    for FILE in $(ls #{shared_path}/config); do
+      ln -sf #{shared_path}/config/$(basename $FILE) #{release_path}/config/$(basename $FILE);
+    done
+  }
 end
 
 namespace :deploy do
