@@ -11,7 +11,7 @@ $(window).ready(function() {
       add_channel(channel);
     });
 
-    $('li.channel:first').trigger('click');
+    //$('li.channel:first').trigger('click');
   });
 
 });
@@ -47,7 +47,7 @@ function switch_to_channel() {
     $.ajaxQueueStart();
   });
 
-  begin_periodic_updater(channel, activity_url);
+  begin_periodic_updater(channel, activity_url(channel));
 }
 
 function activity_url(channel) {
