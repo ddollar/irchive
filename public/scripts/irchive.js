@@ -10,9 +10,9 @@ $(window).ready(function() {
     $.each(data, function(i, channel) {
       add_channel(channel);
     });
-
-    //$('li.channel:first').trigger('click');
   });
+
+  add_channel_searcher();
 
 });
 
@@ -26,37 +26,73 @@ function add_channel(channel) {
   $(li).data('channel', channel);
   $(li).text(channel);
   $(li).bind('click', switch_to_channel);
+  $('#searcher').before(li);
+}
+
+function add_channel_searcher() {
+  var li = document.createElement('li');
+  var search = document.createElement('input');
+  $(li).attr('id', 'searcher');
+  $(search).attr('type', 'text');
+  $(li).append(search);
+  $(search).bind('keydown', search_keydown);
   $('#channels').append(li);
+}
+
+function add_search(search) {
+  var li = document.createElement('li');
+  $(li).addClass('search');
+  $(li).data('search', search);
+  $(li).text(search);
+  $(li).bind('click', switch_to_search);
+  $('#searcher').before(li);
+}
+
+function search_keydown(event) {
+  if (event.keyCode == 13) {
+    add_search($(this).val());
+    $(this).val('');
+  }
 }
 
 function switch_to_channel() {
   jQuery.ajaxQueueClear();
 
-  $('li.channel').removeClass('selected');
+  $('ul#channels>li').removeClass('selected');
   $(this).addClass('selected');
 
   var channel = $(this).data('channel');
   _current_channel = channel;
 
   clear_activity();
-
-  $.getJSON(activity_url(channel), function(data) {
-    $.each(data, function(i, message) {
-      add_activity(channel, message, true);
-    });
-    $.ajaxQueueStart();
-  });
-
-  begin_periodic_updater(channel, activity_url(channel));
+  begin_periodic_updater(channel, channel_url(channel));
 }
 
-function activity_url(channel) {
+function switch_to_search() {
+  jQuery.ajaxQueueClear();
+
+  $('ul#channels>li').removeClass('selected');
+  $(this).addClass('selected');
+
+  var search = $(this).data('search');
+  _current_channel = search;
+
+  clear_activity();
+  begin_periodic_updater(search, search_url(search));
+}
+
+function channel_url(channel) {
   return('/channels/' + escape(channel) + '/activity.json');
+}
+
+function search_url(search) {
+  return('/search/' + escape(search) + '/activity.json');
 }
 
 function clear_activity() {
   $('#activity').children().remove();
   _messages_shown = [];
+  _latest_activity = null;
 }
 
 function add_activity(channel, message, prepend) {
@@ -98,7 +134,13 @@ function begin_periodic_updater(channel, activity_url) {
 
   $.PeriodicalUpdater({
     url :       activity_url,
-    sendData:   function() { return({ since: _latest_activity }); },
+    sendData:   function() {
+      if (_latest_activity) {
+        return({ since: _latest_activity });
+      } else {
+        return({});
+      }
+    },
     minTimeout: 1000,
     maxTimeout: 4000
   },
