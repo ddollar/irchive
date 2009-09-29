@@ -71,7 +71,9 @@ end
 def channels
   database.view("channels/all", :group => true)['rows'].map do |row|
     row['key']
-  end.sort
+  end.sort.reject do |channel|
+    channel == '##irchive'
+  end
 end
 
 def format_message(message)
