@@ -65,7 +65,7 @@ def activity_by(type, value, limit, since=nil)
 
   result['rows'].map do |row|
     row['value']
-  end
+  end.reverse
 end
 
 def channels

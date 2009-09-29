@@ -95,7 +95,7 @@ function clear_activity() {
   _latest_activity = null;
 }
 
-function add_activity(channel, message, prepend) {
+function add_activity(channel, message) {
   $.ajaxQueue({
     type: 'GET',
     url:  '/messages/' + escape(message.id) + '.html',
@@ -103,8 +103,7 @@ function add_activity(channel, message, prepend) {
     success: function(data) {
       if (this.channel == _current_channel && _messages_shown.indexOf(message.id) == -1) {
 
-        $('#activity').prepend(data);
-
+        $('#activity').append(data);
         $("#activity").attr({ scrollTop: $("#activity").attr("scrollHeight") });
 
         if (_latest_activity == null || Date.parse(message.date) >= Date.parse(_latest_activity)) {
@@ -143,7 +142,7 @@ function begin_periodic_updater(channel, activity_url) {
   function(data) {
     try {
       $.each(JSON.parse(data), function(i, message) {
-        add_activity(channel, message, false);
+        add_activity(channel, message);
       });
 
       $.ajaxQueueStart();
