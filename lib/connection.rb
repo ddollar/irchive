@@ -47,6 +47,18 @@ class Connection < Autumn::Stem
     join(arguments[:channel])
   end
 
+  def irc_privmsg_event(stem, sender, arguments)
+    puts "SENDER: #{sender.inspect}"
+    puts "ARGS: #{arguments.inspect}"
+    if sender[:nick] == 'ddollar' && arguments[:recipient] == nickname
+      args = arguments[:message].split(' ')
+      command = args.shift
+      case command
+        when 'join' then join(args.first)
+      end
+    end
+  end
+
   def irc_event(stem, type, sender, arguments)
     return if type == :ping
 
@@ -66,24 +78,6 @@ class Connection < Autumn::Stem
 
     database.save_doc(document)
   end
-
-  # def irc_mode_event(stem, sender, arguments)
-  #   document          = arguments
-  #   document[:type]   = 'mode'
-  #   document[:sender] = sender
-  #   document[:date]   = Time.now
-  #
-  #   database.save_doc(document)
-  # end
-  #
-  # def irc_privmsg_event(stem, sender, arguments)
-  #   document          = arguments
-  #   document[:type]   = 'privmsg'
-  #   document[:sender] = sender
-  #   document[:date]   = Time.now
-  #
-  #   database.save_doc(document)
-  # end
 
 ## database ##################################################################
 
