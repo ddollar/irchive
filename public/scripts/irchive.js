@@ -103,11 +103,7 @@ function add_activity(channel, message, prepend) {
     success: function(data) {
       if (this.channel == _current_channel && _messages_shown.indexOf(message.id) == -1) {
 
-        if (prepend) {
-          $('#activity').prepend(data);
-        } else {
-          $('#activity').append(data);
-        }
+        $('#activity').prepend(data);
 
         $("#activity").attr({ scrollTop: $("#activity").attr("scrollHeight") });
 
