@@ -75,10 +75,13 @@ def channels
 end
 
 def format_message(message)
-  message = CGI::escapeHTML(message)
   message = message.gsub(%r{https?://([-\w\.]+)+(:\d+)?(/([\w/_\-\%\.]*(\?\S+)?)?)?}) do |url|
     %{ <a href="#{url}" rel="nofollow">#{url}</a> }
   end
+  message = message.gsub(/([a-zA-Z0-9_\.\-\+])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+/) do |email|
+    %{ [redacted] }
+  end
+  message = CGI::escapeHTML(message)
 end
 
 def message(id)
